@@ -16,7 +16,7 @@ jobs:
   
       - name: Install dependencies
         run: |
-          pip install pytest pytest-cov pint numpy scipy
+          pip install pytest pytest-cov pint numpy scipy matplotlib
   
       - name: Run tests
         run: |
