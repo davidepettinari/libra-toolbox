@@ -71,29 +71,51 @@ class Model:
             - self.Q_top(c).to(ureg.particle * ureg.s**-1)
         )
 
+    def _generate_time_intervals(self, t_final):
+        time_intervals = []
+        previous_tf = None
+
+        for irr in self.irradiations:
+            t0 = irr[0]
+            tf = irr[1]
+
+            if previous_tf is not None:
+                time_intervals.append((previous_tf, t0))
+            time_intervals.append((t0, tf))
+            previous_tf = tf
+
+        # Add the final interval from the last tf to t_final
+        if previous_tf is not None and previous_tf < t_final:
+            time_intervals.append((previous_tf, t_final))
+
+        return time_intervals
+
     def run(self, t_final):
         concentration_units = ureg.particle * ureg.m**-3
         time_units = ureg.s
         initial_concentration = 0
-        res = solve_ivp(
-            fun=self.rhs,
-            t_span=(0, t_final.to(time_units).magnitude),
-            y0=[initial_concentration],
-            t_eval=np.sort(
-                np.concatenate(
-                    [
-                        np.linspace(0, t_final.to(time_units).magnitude, 10000),
-                        [irr[1].to(time_units).magnitude for irr in self.irradiations],
-                    ]
-                )
-            ),
-            # method="RK45",  # RK45 doesn't catch the end of irradiations properly... unless constraining the max_step
-            # max_step=(0.5 * ureg.h).to(time_units).magnitude,
-            # method="Radau",
-            method="BDF",
-        )
-        self.times = res.t * time_units
-        self.concentrations = res.y[0] * concentration_units
+        time_intervals = self._generate_time_intervals(t_final)
+
+        for interval in time_intervals:
+            t0 = interval[0].to(time_units).magnitude
+            tf = interval[1].to(time_units).magnitude
+
+            res = solve_ivp(
+                fun=self.rhs,
+                t_span=(t0, tf),
+                y0=[initial_concentration],
+                t_eval=np.linspace(t0, tf, 1000),
+                # method="RK45",  # RK45 doesn't catch the end of irradiations properly... unless constraining the max_step
+                # max_step=(0.5 * ureg.h).to(time_units).magnitude,
+                # method="Radau",
+                method="BDF",
+            )
+            self.times.append(res.t)
+            self.concentrations.append(res.y[0])
+            initial_concentration = res.y[0][-1]
+
+        self.times = np.concatenate(self.times) * time_units
+        self.concentrations = np.concatenate(self.concentrations) * concentration_units
 
     def reset(self):
         self.concentrations = []
