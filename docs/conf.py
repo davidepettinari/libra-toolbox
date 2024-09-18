@@ -33,6 +33,12 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
+
+# Add custom CSS file
+html_css_files = [
+    "css/custom.css",
+]
+
 # Optional: Add theme options
 html_theme_options = {
     "show_prev_next": False,

@@ -1,4 +1,4 @@
-libra_toolbox
+API Reference
 =============
 
 .. toctree::
