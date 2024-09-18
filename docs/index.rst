@@ -24,7 +24,7 @@ Roadmap
 - :strike:`Neutron detection: tools and scripts for neutron detection post processing`
 - Neutronics: tools to facilitate building OpenMC models
 - Tritium transport: tools to facilitate building FESTIM tritium transport models
-
+- Code coverage with `codecov <https://about.codecov.io/>`_
 
 
 .. toctree::
