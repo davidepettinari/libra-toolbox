@@ -1,0 +1,24 @@
+[build-system]
+requires = [
+    "setuptools >= 45",
+    "wheel",
+    "setuptools_scm[toml] >= 7.0.5"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "libra-toolbox"
+authors = [
+    {name = "Remi Delaporte-Mathurin", email = "remidm@mit.edu"},
+]
+description = "Design and analysis tools for LIBRA project"
+license = {file = "LICENSE"}
+requires-python = ">=3.6"
+dynamic = ["version"]
+dependencies = ["numpy", "pint", "scipy", "matplotlib"]
+
+[project.optional-dependencies]
+tests = ["pytest>=5.4.3", "pytest-cov"]
+
+[tool.setuptools_scm]
+write_to = "libra_toolbox/_version.py"
