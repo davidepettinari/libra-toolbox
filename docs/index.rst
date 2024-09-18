@@ -22,8 +22,8 @@ Roadmap
 
 - :strike:`Tritium model: 0D model for tritium release`
 - :strike:`Neutron detection: tools and scripts for neutron detection post processing`
-- Neutronics: tools to facilitate building OpenMC models
-- Tritium transport: tools to facilitate building FESTIM tritium transport models
+- Neutronics: tools to facilitate building `OpenMC <https://docs.openmc.org/en/stable/>`_ models
+- Tritium transport: tools to facilitate building `FESTIM <https://github.com/festim-dev/festim>`_ tritium transport models
 - Code coverage with `codecov <https://about.codecov.io/>`_
 
 
