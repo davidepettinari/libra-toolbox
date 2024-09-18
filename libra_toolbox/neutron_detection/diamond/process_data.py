@@ -3,7 +3,7 @@ import numpy as np
 
 
 def get_time_energy_values(
-    directory: str, time_column: int = 2, energy_column: int = 3
+    directory: str, time_column: int = 2, energy_column: int = 3, delimiter=";"
 ):
     """From a directory of CSV files, extract the time and energy values.
 
@@ -20,10 +20,10 @@ def get_time_energy_values(
 
     # Iterate through all CSV files in the directory
     for filename in os.listdir(directory):
-        if filename.endswith(".CSV"):
+        if filename.endswith(".CSV") or filename.endswith(".csv"):
             # Load data from the CSV file
             csv_file_path = os.path.join(directory, filename)
-            data = np.genfromtxt(csv_file_path, delimiter=";")
+            data = np.genfromtxt(csv_file_path, delimiter=delimiter)
             # print(data.shape)
             # print(data)
             # Extract and append the energy data to the list
