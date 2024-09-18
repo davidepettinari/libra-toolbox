@@ -11,7 +11,7 @@ jobs:
   
       - name: Install dependencies
         run: |
-          pip install .[tests]
+          pip install .[tests] -vvv
   
       - name: Run tests
         run: |
