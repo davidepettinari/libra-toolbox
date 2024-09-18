@@ -32,20 +32,26 @@ def get_time_energy_values(
     return time_values, energy_values
 
 
-def main(directory: str, bin_time: int, energy_peak_min: float, energy_peak_max: float):
+def main(
+    directory: str,
+    bin_time: int,
+    energy_peak_min: float,
+    energy_peak_max: float,
+    **kwargs,
+):
     """
 
     Args:
-        directory (str): The directory containing the CSV files.
+        directory (str): The directory containing the CSV files. The csv files should contain times in ps.
         bin_time (int): The time interval to bin the data (s).
         energy_peak_min (float): The minimum energy channel for the (n,alpha) peak.
         energy_peak_max (float): The maximum energy channel for the (n,alpha) peak.
+        kwargs: Additional keyword arguments for get_time_energy_values.
 
     Returns:
         dict: A dictionary containing the time and energy values, as well as the count rates.
     """
-    time_values, energy_values = get_time_energy_values(directory)
-
+    time_values, energy_values = get_time_energy_values(directory, **kwargs)
     # Create a histogram to represent the combined energy spectrum
 
     # sort time and energy values
