@@ -1,7 +1,7 @@
 libra-toolbox
 =============
 
-``libra-toolbox`` is a powerful and flexible library designed to help the design and analysis of LIBRA experiments.
+``libra-toolbox`` is a library designed to facilitate the analysis of LIBRA experiments, including data processing, visualization, and model building.
 This documentation will guide you through the various features and functionalities of libra-toolbox.
 
 
@@ -31,5 +31,6 @@ Roadmap
    :maxdepth: 2
    :caption: Contents:
 
+   installation
    examples/index
    modules/index
