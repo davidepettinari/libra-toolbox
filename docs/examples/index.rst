@@ -6,3 +6,4 @@ Examples
 
    foil_analysis/main
    diamond_detector
+   tritium_model
