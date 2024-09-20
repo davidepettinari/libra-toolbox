@@ -2,25 +2,23 @@ from libra_toolbox.neutron_detection.diamond.process_data import *
 import pytest
 
 
-def test_get_avg_neutron_rate():
+def test_get_avg_neutron_rate(tmpdir):
 
     time_values = np.arange(1, 10)
     print(time_values)
     t_min = 2.5
     t_max = 9.0
 
-    avg_neutron_rate = get_avg_neutron_rate(time_values, t_min, t_max)
+    # read the data back
+    processor = DataProcessor()
+    processor.time_values = time_values
+
+    avg_neutron_rate, error = processor.get_avg_rate(t_min, t_max)
 
     expected_number_of_counts = 6  # there are 6 counts between 2.5 and 9.0
 
-    expected_avg_neutron_rate = {
-        "counts": expected_number_of_counts,
-        "err": np.sqrt(expected_number_of_counts),
-        "count rate": expected_number_of_counts / (t_max - t_min),
-        "count rate err": np.sqrt(expected_number_of_counts) / (t_max - t_min),
-    }
-
-    assert avg_neutron_rate == expected_avg_neutron_rate
+    assert avg_neutron_rate == expected_number_of_counts / (t_max - t_min)
+    assert error == np.sqrt(expected_number_of_counts) / (t_max - t_min)
 
 
 @pytest.mark.parametrize("delimiter", [",", ";", "\t"])
@@ -41,15 +39,26 @@ def test_get_time_energy_values(tmpdir, delimiter, extention):
     )
 
     # read the data back
-    time_values_in, energy_values_in = get_time_energy_values(
-        tmpdir, time_column=0, energy_column=1, delimiter=delimiter
+    processor = DataProcessor()
+    processor.add_file(
+        filename, time_column=0, energy_column=1, delimiter=delimiter, scale_time=False
     )
+
+    time_values_in, energy_values_in = processor.time_values, processor.energy_values
+
+    # test
+
+    # sort values out based on time
+    inds = np.argsort(time_values_out)
+    time_values_out = time_values_out[inds]
+    energy_values_out = energy_values_out[inds]
 
     assert np.allclose(time_values_in, time_values_out)
     assert np.allclose(energy_values_in, energy_values_out)
 
 
-def test_main(tmpdir):
+def test_get_count_rate(tmpdir):
+
     total_time_s = 100  # s
     total_time_ps = total_time_s * 1e12  # s to ps
 
@@ -95,24 +104,32 @@ def test_main(tmpdir):
 
     # run
     bin_time = 20  # s
-    res1 = main(
-        tmpdir,
-        bin_time=bin_time,
-        energy_peak_min=mean_energy_peak1 - std_energy_peak1 * 2,
-        energy_peak_max=mean_energy_peak1 + std_energy_peak1 * 2,
-        delimiter=",",
-        time_column=0,
-        energy_column=1,
+    processor = DataProcessor()
+    processor.add_file(
+        filename1, time_column=0, energy_column=1, delimiter=",", scale_time=True
+    )
+    processor.add_file(
+        filename2, time_column=0, energy_column=1, delimiter=",", scale_time=True
     )
 
-    res2 = main(
-        tmpdir,
+    count_rates_total, count_rate_bins_total = processor.get_count_rate(
+        bin_time=bin_time
+    )
+
+    count_rates_peak1, count_rate_bins_peak1 = processor.get_count_rate(
         bin_time=bin_time,
-        energy_peak_min=mean_energy_peak2 - std_energy_peak2 * 2,
-        energy_peak_max=mean_energy_peak2 + std_energy_peak2 * 2,
-        delimiter=",",
-        time_column=0,
-        energy_column=1,
+        energy_window=(
+            mean_energy_peak1 - std_energy_peak1 * 2,
+            mean_energy_peak1 + std_energy_peak1 * 2,
+        ),
+    )
+
+    count_rates_peak2, count_rate_bins_peak2 = processor.get_count_rate(
+        bin_time=bin_time,
+        energy_window=(
+            mean_energy_peak2 - std_energy_peak2 * 2,
+            mean_energy_peak2 + std_energy_peak2 * 2,
+        ),
     )
 
     # test
@@ -120,20 +137,9 @@ def test_main(tmpdir):
     expected_count_rate_peak1 = nb_counts_peak1 / total_time_s
     expected_count_rate_peak2 = nb_counts_peak2 / total_time_s
 
-    assert "all_count_rates" in res1
-    assert "all_count_rate_bins" in res1
-    assert "time_values" in res1
-    assert "energy_values" in res1
-    assert "peak_count_rates" in res1
-    assert "peak_count_rate_bins" in res1
-    assert "peak_time_values" in res1
-
     # check that the count rates are as expected
-    assert np.allclose(res1["all_count_rates"], expected_count_rate_total, rtol=0.1)
-    assert np.allclose(res1["peak_count_rates"], expected_count_rate_peak1, rtol=0.1)
+    assert np.allclose(count_rates_total, expected_count_rate_total, rtol=0.1)
+    assert np.allclose(count_rates_peak1, expected_count_rate_peak1, rtol=0.1)
+    assert np.allclose(count_rates_peak2, expected_count_rate_peak2, rtol=0.1)
 
-    assert np.allclose(res2["all_count_rates"], expected_count_rate_total, rtol=0.1)
-    assert np.allclose(res2["peak_count_rates"], expected_count_rate_peak2, rtol=0.1)
-
-    assert len(res1["all_count_rate_bins"]) == total_time_s / bin_time
-    assert len(res2["all_count_rate_bins"]) == total_time_s / bin_time
+    assert len(count_rate_bins_total) == total_time_s / bin_time

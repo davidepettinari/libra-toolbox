@@ -3,3 +3,8 @@ nbsphinx
 nbconvert
 IPython
 sphinx-design
+pint
+numpy
+scipy
+matplotlib
+sympy

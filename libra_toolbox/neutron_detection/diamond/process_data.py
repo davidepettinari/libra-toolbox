@@ -1,117 +1,127 @@
-import os
 import numpy as np
 
 
-def get_time_energy_values(
-    directory: str, time_column: int = 2, energy_column: int = 3, delimiter=";"
-):
-    """From a directory of CSV files, extract the time and energy values.
-
-    Args:
-        directory (str): The directory containing the CSV files.
-        time_column (int, optional): The column containing the time values. Defaults to 2.
-        energy_column (int, optional): The column containing the energy values. Defaults to 3.
-
-    Returns:
-        np.ndarray, np.ndarray: A tuple containing all the time and energy values.
+class DataProcessor:
     """
-    energy_values = []
-    time_values = []
+    A class for reading and processing data from diamond detectors as text files
 
-    # Iterate through all CSV files in the directory
-    for filename in os.listdir(directory):
-        if filename.endswith(".CSV") or filename.endswith(".csv"):
-            # Load data from the CSV file
-            csv_file_path = os.path.join(directory, filename)
-            data = np.genfromtxt(csv_file_path, delimiter=delimiter)
-            # print(data.shape)
-            # print(data)
-            # Extract and append the energy data to the list
-            time_values.extend(data[:, time_column])
-            energy_values.extend(data[:, energy_column])
-    return time_values, energy_values
-
-
-def main(
-    directory: str,
-    bin_time: int,
-    energy_peak_min: float,
-    energy_peak_max: float,
-    **kwargs,
-):
+    Attributes:
+        files (list of str): List of text filenames that have been read
+        time_values (np.array): Array of time values from all files
+        energy_values (np.array): Array of energy values from all files
     """
 
-    Args:
-        directory (str): The directory containing the CSV files. The csv files should contain times in ps.
-        bin_time (int): The time interval to bin the data (s).
-        energy_peak_min (float): The minimum energy channel for the (n,alpha) peak.
-        energy_peak_max (float): The maximum energy channel for the (n,alpha) peak.
-        kwargs: Additional keyword arguments for get_time_energy_values.
+    def __init__(self) -> None:
+        self.files = []
 
-    Returns:
-        dict: A dictionary containing the time and energy values, as well as the count rates.
-    """
-    time_values, energy_values = get_time_energy_values(directory, **kwargs)
-    # Create a histogram to represent the combined energy spectrum
+        self.time_values = np.array([])
+        self.energy_values = np.array([])
 
-    # sort time and energy values
-    inds = np.argsort(time_values)
-    time_values = np.array(time_values)[inds]
-    time_values *= 1 / 1e12  # ps to s
+    def add_file(
+        self,
+        filename: str,
+        time_column: int,
+        energy_column: int,
+        scale_time: bool = True,
+        **kwargs,
+    ):
+        """
+        Adds a file to the data processor, reading the time and energy values from the file
+        and appending them to the existing data (``time_values`` and ``energy_values`` attributes).
 
-    time_bins = np.arange(0, time_values[-2], bin_time)
-    energy_values = np.array(energy_values)[inds]
+        Args:
+            filename (str): the name of the file to read
+            time_column (int): the column index of the time values in the file
+            energy_column (int): the column index of the energy values in the file
+            scale_time (bool, optional): if True, the time values are scaled from ps to s. Defaults to True.
+        """
+        self.files.append(filename)
 
-    # Define the energy range of the (n,alpha) peak
-    # energy_peak_min, energy_peak_max = 1180, 1300
-    peak_mask = (energy_values > energy_peak_min) & (energy_values < energy_peak_max)
-    peak_time_values = time_values[peak_mask]
+        # Should we store the data for each file separately too?
+        data = np.genfromtxt(filename, **kwargs)
 
-    peak_count_rates, peak_count_rate_bins = np.histogram(
-        peak_time_values, bins=time_bins
-    )
-    peak_count_rates = peak_count_rates / bin_time
+        time_values = data[:, time_column]
+        if scale_time:
+            # convert times from ps to s
+            time_values *= 1 / 1e12
+        energy_values = data[:, energy_column]
 
-    all_count_rates, all_count_rate_bins = np.histogram(time_values, bins=time_bins)
-    all_count_rates = all_count_rates / bin_time
+        # Append time and energy values to the list
+        self.time_values = np.concatenate((self.time_values, time_values))
+        self.energy_values = np.concatenate((self.energy_values, energy_values))
 
-    res = {
-        "all_count_rates": all_count_rates,
-        "all_count_rate_bins": all_count_rate_bins,
-        "time_values": time_values,
-        "energy_values": energy_values,
-        "peak_count_rates": peak_count_rates,
-        "peak_count_rate_bins": peak_count_rate_bins,
-        "peak_time_values": peak_time_values,
-    }
-    return res
+        # sort time and energy values
+        inds = np.argsort(self.time_values)
+        self.time_values = np.array(self.time_values)[inds]
+        self.energy_values = np.array(self.energy_values)[inds]
 
+        print(f"Added file: {filename} containing {len(time_values)} events")
 
-def get_avg_neutron_rate(time_values, t_min, t_max):
-    """Calculate the average neutron rate for a given time window.
+    def get_count_rate(self, bin_time: float, energy_window: tuple = None):
+        """
+        Calculate the count rate in a given time bin for the
+        time values stored in the data processor.
 
-    Args:
-        time_values (np.ndarray): time values (s) of the considered counts
-        t_min (float): lower bound (s) of the window
-        t_max (float): upper bound (s) of the window
+        Args:
+            bin_time (float): the time bin width in seconds
+            energy_window (tuple, optional): If provided, the rate
+                will be computed only on this energy window. Defaults to None.
 
-    Returns:
-        dict: A dictionary containing the average neutron rate for the time window.
-    """
-    section_data = {}
+        Returns:
+            np.array: Array of count rates (counts per second)
+            np.array: Array of time bin edges (in seconds)
+        """
+        time_values = self.time_values.copy()
+        energy_values = self.energy_values.copy()
 
-    # Create mask to only count pulses of any energy in section time window
-    idx = np.logical_and(
-        time_values > t_min,
-        time_values < t_max,
-    )
+        time_bins = np.arange(0, time_values[-2], bin_time)
 
-    section_data["counts"] = len(time_values[idx])
-    section_data["err"] = np.sqrt(len(time_values[idx]))
-    delta_t = t_max - t_min
-    section_data["count rate"] = section_data["counts"] / delta_t
-    section_data["count rate err"] = section_data["err"] / delta_t
-    return section_data
+        if energy_window is not None:
+            peak_mask = (energy_values > energy_window[0]) & (
+                energy_values < energy_window[1]
+            )
+            time_values = time_values[peak_mask]
+
+        count_rates, count_rate_bins = np.histogram(time_values, bins=time_bins)
+        count_rates = count_rates / bin_time
+
+        return count_rates, count_rate_bins
+
+    def get_avg_rate(self, t_min: float, t_max: float, energy_window: tuple = None):
+        """
+        Calculate the average count rate in a given time window for the
+        time values stored in the data processor.
+        Similar to ``get_count_rate`` but returns a single value for a time window.
+
+        Args:
+            t_min (float): start time of the time window
+            t_max (float): end time of the time window
+            energy_window (tuple, optional): If provided, the rate
+                will be computed only on this energy window. Defaults to None.
+
+        Returns:
+            float: Average count rate (counts per second)
+            float: Error on the average count rate (counts per second)
+        """
+        time_values = self.time_values.copy()
+        energy_values = self.energy_values.copy()
+
+        if energy_window is not None:
+            peak_mask = (energy_values > energy_window[0]) & (
+                energy_values < energy_window[1]
+            )
+            time_values = time_values[peak_mask]
+
+        # Create mask to only count pulses of any energy in section time window
+        idx = np.logical_and(self.time_values > t_min, self.time_values < t_max)
+
+        counts = len(self.time_values[idx])
+        error = np.sqrt(len(self.time_values[idx]))
+        delta_t = t_max - t_min
+        count_rate = counts / delta_t
+        count_rate_err = error / delta_t
+
+        return count_rate, count_rate_err
 
 
 if __name__ == "__main__":
