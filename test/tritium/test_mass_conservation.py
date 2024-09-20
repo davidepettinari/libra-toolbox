@@ -10,14 +10,11 @@ def test_simple_case(TBR):
         radius=2 * ureg.m,
         height=4 * ureg.m,
         TBR=TBR * ureg.particle * ureg.neutron**-1,
+        k_top=2 * ureg.m * ureg.s**-1,
+        k_wall=3 * ureg.m * ureg.s**-1,
+        irradiations=[(0 * ureg.s, 10 * ureg.s), (60 * ureg.s, 70 * ureg.s)],
+        neutron_rate=30 * ureg.neutron * ureg.s**-1,
     )
-
-    model.k_top = 2 * ureg.m * ureg.s**-1
-    model.k_wall = 3 * ureg.m * ureg.s**-1
-
-    model.irradiations = [(0 * ureg.s, 10 * ureg.s), (60 * ureg.s, 70 * ureg.s)]
-
-    model.neutron_rate = 30 * ureg.neutron * ureg.s**-1
 
     # run
     model.run(100 * ureg.s)
