@@ -47,6 +47,23 @@ class Model:
             top surface
         irradiations (list[tuple[pint.Quantity, pint.Quantity]]): list
             of tuples with the start and stop times of irradiations
+
+    Attributes:
+        radius (pint.Quantity): radius of the salt
+        height (pint.Quantity): height of the salt
+        L_wall (pint.Quantity): thickness of the wall
+        neutron_rate (pint.Quantity): neutron rate
+        TBR (pint.Quantity): Tritium Breeding Ratio
+        irradiations (list[tuple[pint.Quantity, pint.Quantity]]): list
+            of tuples with the start and stop times of irradiations
+        k_wall (pint.Quantity): mass transport coefficient for the
+            walls
+        k_top (pint.Quantity): mass transport coefficient for the
+            top surface
+        concentrations (list[pint.Quantity]): list of concentrations
+            at each time step
+        times (list[pint.Quantity]): list of times at each time step
+
     """
 
     def __init__(
