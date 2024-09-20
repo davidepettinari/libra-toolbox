@@ -14,22 +14,26 @@ MOLAR_MASS = 6.032 / 2 * ureg.g * ureg.mol**-1
 class Model:
     def __init__(
         self,
-        radius: pint.Quantity = None,
-        height: pint.Quantity = None,
-        TBR: pint.Quantity = None,
+        radius: pint.Quantity,
+        height: pint.Quantity,
+        TBR: pint.Quantity,
+        neutron_rate: pint.Quantity,
+        k_wall: pint.Quantity,
+        k_top: pint.Quantity,
+        irradiations: list,
     ) -> None:
         self.radius = radius
         self.height = height
 
         self.L_wall = 0.06 * ureg.inches
 
-        self.neutron_rate = 3e8 * ureg.neutron * ureg.s**-1
+        self.neutron_rate = neutron_rate
 
         self.TBR = TBR
-        self.irradiations = []
+        self.irradiations = irradiations
 
-        self.k_wall = 1.9e-8 * ureg.m * ureg.s**-1  # from Kumagai
-        self.k_top = 4.9e-7 * ureg.m * ureg.s**-1  # from Kumagai
+        self.k_wall = k_wall
+        self.k_top = k_top
 
         self.concentrations = []
         self.times = []
