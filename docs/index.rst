@@ -31,6 +31,7 @@ To install libra-toolbox, use pip:
 
    pip install git+https://github.com/LIBRA-project/libra-toolbox
 
+For more details, see the :ref:`installation` page.
 
 Roadmap
 -------
