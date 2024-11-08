@@ -3,6 +3,7 @@ from typing import List
 import pint
 from libra_toolbox.tritium.model import ureg
 from datetime import datetime, timedelta
+import warnings
 
 
 class LSCFileReader:
@@ -26,6 +27,12 @@ class LSCFileReader:
 
         # read the file with dataframe starting from the line with S#
         self.data = pd.read_csv(self.file_path, skiprows=start)
+
+        # check if last column is all NaN
+        if self.data[self.data.columns[-1]].isnull().all():
+            warnings.warn(
+                "There seem to be an issue with the last column. Is the format of the file correct?"
+            )
 
     def get_bq1_values(self):
         return self.data["Bq:1"].tolist()
