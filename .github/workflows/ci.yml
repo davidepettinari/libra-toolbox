@@ -1,14 +1,13 @@
 name: CI
 on: [pull_request, push]
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-  
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -17,11 +16,15 @@ jobs:
       - name: Install dependencies
         run: |
           pip install .[tests]
-  
+
       - name: Run tests
         run: |
           python -m pytest test/ --cov libra_toolbox --cov-report xml --cov-report term
-      
+
+      - name: Run notebook examples
+        run: |
+          jupyter nbconvert --to python --execute docs/examples/*.ipynb
+
       # - name: Upload coverage to Codecov
       #   uses: codecov/codecov-action@v4
       #   with:
