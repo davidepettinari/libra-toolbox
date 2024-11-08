@@ -76,6 +76,8 @@ class LSCSample:
     @staticmethod
     def from_file(file_reader: LSCFileReader, vial_name):
         values = file_reader.get_bq1_values_with_labels()
+        if vial_name not in values:
+            raise ValueError(f"Vial {vial_name} not found in the file reader.")
         activity = values[vial_name] * ureg.Bq
         return LSCSample(activity, vial_name)
 
