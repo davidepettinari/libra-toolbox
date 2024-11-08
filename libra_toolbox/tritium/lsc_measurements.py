@@ -58,6 +58,8 @@ class LSCFileReader:
 
 
 class LSCSample:
+    activity: pint.Quantity
+
     def __init__(self, activity: pint.Quantity, name: str):
         self.activity = activity
         self.name = name
@@ -83,6 +85,8 @@ class LSCSample:
 
 
 class LIBRASample:
+    samples: List[LSCSample]
+
     def __init__(self, samples: List[LSCSample], time: str):
         self.samples = samples
         self._time = time
@@ -115,6 +119,8 @@ class LIBRASample:
 
 
 class LIBRARun:
+    samples: List[LIBRASample]
+
     def __init__(self, samples: List[LIBRASample], start_time: str):
         self.samples = samples
         self.start_time = start_time
@@ -142,3 +148,8 @@ class LIBRARun:
     @property
     def relative_times(self):
         return [sample.get_relative_time(self.start_time) for sample in self.samples]
+
+    @property
+    def relative_times_as_pint(self):
+        times = [t.total_seconds() * ureg.s for t in self.relative_times]
+        return ureg.Quantity.from_list(times).to(ureg.day)
