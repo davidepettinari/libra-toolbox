@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from libra_toolbox.tritium.model import Model, ureg, quantity_to_activity
+from libra_toolbox.tritium import ureg
+from libra_toolbox.tritium.model import Model, quantity_to_activity
 
 
 COLLECTION_VOLUME = 10 * ureg.ml
