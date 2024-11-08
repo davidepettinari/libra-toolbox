@@ -118,7 +118,7 @@ class LIBRASample:
         return self.get_soluble_activity() + self.get_insoluble_activity()
 
 
-class LIBRARun:
+class GasStream:
     samples: List[LIBRASample]
 
     def __init__(self, samples: List[LIBRASample], start_time: str):
@@ -153,3 +153,19 @@ class LIBRARun:
     def relative_times_as_pint(self):
         times = [t.total_seconds() * ureg.s for t in self.relative_times]
         return ureg.Quantity.from_list(times).to(ureg.day)
+
+
+class LIBRARun:
+    def __init__(self, streams: List[GasStream], start_time: str):
+        self.streams = streams
+        self.start_time = start_time
+
+
+class BABY100mLRun(LIBRARun):
+    def __init__(self, inner_vessel_stream, start_time):
+        super().__init__([inner_vessel_stream], start_time)
+
+
+class BABY1LRun(LIBRARun):
+    def __init__(self, inner_vessel_stream, outer_vessel_stream, start_time):
+        super().__init__([inner_vessel_stream, outer_vessel_stream], start_time)
