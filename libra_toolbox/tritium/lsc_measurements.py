@@ -2,7 +2,7 @@ import pandas as pd
 from typing import List
 import pint
 from libra_toolbox.tritium.model import ureg
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class LSCFileReader:
@@ -78,8 +78,7 @@ class LIBRASample:
         self.samples = samples
         self._time = time
 
-    def get_relative_time(self, start_time: str):
-
+    def get_relative_time(self, start_time: str) -> timedelta:
         start_time = datetime.strptime(start_time, "%m/%d/%Y %I:%M %p")
         sample_time = datetime.strptime(self._time, "%m/%d/%Y %I:%M %p")
         return sample_time - start_time
