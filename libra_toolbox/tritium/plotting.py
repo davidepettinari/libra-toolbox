@@ -3,13 +3,130 @@ import numpy as np
 
 from libra_toolbox.tritium import ureg
 from libra_toolbox.tritium.model import Model, quantity_to_activity
+from libra_toolbox.tritium.lsc_measurements import LIBRASample, LIBRARun
 
+import pint
+from typing import List
 
 COLLECTION_VOLUME = 10 * ureg.ml
 LSC_SAMPLE_VOLUME = 10 * ureg.ml
 
 
-def plot_bars(measurements, index=None, bar_width=0.35, stacked=True):
+def plot_bars(
+    measurements: List[LIBRASample] | LIBRARun | dict,
+    index=None,
+    bar_width=0.35,
+    stacked=True,
+):
+    if isinstance(measurements, dict):
+        return plot_bars_old(measurements, index, bar_width, stacked)
+
+    if isinstance(measurements, LIBRARun):
+        measurements = measurements.samples
+
+    vial_1_vals = ureg.Quantity.from_list(
+        [sample.samples[0].activity for sample in measurements]
+    )
+    vial_2_vals = ureg.Quantity.from_list(
+        [sample.samples[1].activity for sample in measurements]
+    )
+    vial_3_vals = ureg.Quantity.from_list(
+        [sample.samples[2].activity for sample in measurements]
+    )
+    vial_4_vals = ureg.Quantity.from_list(
+        [sample.samples[3].activity for sample in measurements]
+    )
+
+    if index is None:
+        if stacked:
+            index = np.arange(len(measurements))
+        else:
+            group_spacing = 1  # Adjust this value to control spacing between groups
+            index = (
+                np.arange(len(measurements)) * (group_spacing / 2 + 1) * bar_width * 4
+            )
+
+    if stacked:
+        vial_3_bar = plt.bar(
+            index,
+            vial_3_vals,
+            bar_width,
+            label="Vial 3",
+            color="#FB8500",
+        )
+        vial_4_bar = plt.bar(
+            index,
+            vial_4_vals,
+            bar_width,
+            label="Vial 4",
+            color="#FFB703",
+            bottom=vial_3_vals,
+        )
+        vial_1_bar = plt.bar(
+            index,
+            vial_1_vals,
+            bar_width,
+            label="Vial 1",
+            color="#219EBC",
+            bottom=vial_3_vals + vial_4_vals,
+        )
+        vial_2_bar = plt.bar(
+            index,
+            vial_2_vals,
+            bar_width,
+            label="Vial 2",
+            color="#8ECAE6",
+            bottom=vial_3_vals + vial_4_vals + vial_1_vals,
+        )
+    else:
+        if isinstance(index, pint.Quantity) and not isinstance(
+            bar_width, pint.Quantity
+        ):
+            raise TypeError(
+                f"index and bar_width must be of the same type, got {index=}, {bar_width=}"
+            )
+
+        vial_1_bar = plt.bar(
+            index - 1.5 * bar_width,
+            vial_1_vals,
+            bar_width,
+            linewidth=2,
+            edgecolor="white",
+            label="Vial 1",
+            color="#219EBC",
+        )
+        vial_2_bar = plt.bar(
+            index - 0.5 * bar_width,
+            vial_2_vals,
+            bar_width,
+            linewidth=2,
+            edgecolor="white",
+            label="Vial 2",
+            color="#8ECAE6",
+        )
+        vial_3_bar = plt.bar(
+            index + 0.5 * bar_width,
+            vial_3_vals,
+            bar_width,
+            linewidth=2,
+            edgecolor="white",
+            label="Vial 3",
+            color="#FB8500",
+        )
+        vial_4_bar = plt.bar(
+            index + 1.5 * bar_width,
+            vial_4_vals,
+            bar_width,
+            linewidth=2,
+            edgecolor="white",
+            label="Vial 4",
+            color="#FFB703",
+        )
+
+    return index
+
+
+def plot_bars_old(measurements, index=None, bar_width=0.35, stacked=True):
     vial_1_vals = (
         np.array([sample[1].magnitude for sample in measurements.values()]) * ureg.Bq
     )
