@@ -3,9 +3,7 @@ import numpy as np
 from scipy.integrate import cumulative_trapezoid
 from scipy.integrate import solve_ivp
 
-ureg = pint.UnitRegistry()
-ureg.setup_matplotlib()
-ureg.define("neutron = 1 * particle = n")
+from libra_toolbox.tritium import ureg
 
 SPECIFIC_ACT = 3.57e14 * ureg.Bq * ureg.g**-1
 MOLAR_MASS = 6.032 / 2 * ureg.g * ureg.mol**-1

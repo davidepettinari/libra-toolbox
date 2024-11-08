@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List
 import pint
-from libra_toolbox.tritium.model import ureg
+from libra_toolbox.tritium import ureg
 from datetime import datetime, timedelta
 import warnings
 
