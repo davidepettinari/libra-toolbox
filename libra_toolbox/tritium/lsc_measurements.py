@@ -127,7 +127,7 @@ class LIBRARun:
                 cumulative_activity.append(sample.get_soluble_activity())
             elif form == "insoluble":
                 cumulative_activity.append(sample.get_insoluble_activity())
-        cumulative_activity = pint.Quantity.from_list(cumulative_activity)
+        cumulative_activity = ureg.Quantity.from_list(cumulative_activity)
         cumulative_activity = cumulative_activity.cumsum()
         return cumulative_activity
 
