@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from libra_toolbox.tritium.plotting import plot_bars
-from libra_toolbox.tritium.lsc_measurements import LIBRASample, LIBRARun, LSCSample
+from libra_toolbox.tritium.lsc_measurements import LIBRASample, GasStream, LSCSample
 from libra_toolbox.tritium import ureg
 
 import matplotlib.pyplot as plt
@@ -52,7 +52,7 @@ def sample_measurements():
 
 @pytest.fixture
 def sample_run(sample_measurements):
-    return LIBRARun(samples=sample_measurements, start_time="11/7/2024 4:20 PM")
+    return GasStream(samples=sample_measurements, start_time="11/7/2024 4:20 PM")
 
 
 def test_plot_bars_with_samples(sample_measurements):

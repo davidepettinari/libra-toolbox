@@ -1,7 +1,7 @@
 from libra_toolbox.tritium.lsc_measurements import (
     LSCSample,
     LIBRASample,
-    LIBRARun,
+    GasStream,
     LSCFileReader,
 )
 from libra_toolbox.tritium.model import ureg

@@ -118,7 +118,7 @@ class LIBRASample:
         return self.get_soluble_activity() + self.get_insoluble_activity()
 
 
-class LIBRARun:
+class GasStream:
     samples: List[LIBRASample]
 
     def __init__(self, samples: List[LIBRASample], start_time: str):

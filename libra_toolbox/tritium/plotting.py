@@ -3,7 +3,7 @@ import numpy as np
 
 from libra_toolbox.tritium import ureg
 from libra_toolbox.tritium.model import Model, quantity_to_activity
-from libra_toolbox.tritium.lsc_measurements import LIBRASample, LIBRARun
+from libra_toolbox.tritium.lsc_measurements import LIBRASample, GasStream
 
 import pint
 from typing import List
@@ -13,7 +13,7 @@ LSC_SAMPLE_VOLUME = 10 * ureg.ml
 
 
 def plot_bars(
-    measurements: List[LIBRASample] | LIBRARun | dict,
+    measurements: List[LIBRASample] | GasStream | dict,
     index=None,
     bar_width=0.35,
     stacked=True,
@@ -21,7 +21,7 @@ def plot_bars(
     if isinstance(measurements, dict):
         return plot_bars_old(measurements, index, bar_width, stacked)
 
-    if isinstance(measurements, LIBRARun):
+    if isinstance(measurements, GasStream):
         measurements = measurements.samples
 
     vial_1_vals = ureg.Quantity.from_list(

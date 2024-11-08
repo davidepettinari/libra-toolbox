@@ -1,7 +1,7 @@
 import pytest
 import pint
 from datetime import datetime
-from libra_toolbox.tritium.lsc_measurements import LIBRARun, LIBRASample, LSCSample
+from libra_toolbox.tritium.lsc_measurements import GasStream, LIBRASample, LSCSample
 from libra_toolbox.tritium.model import ureg
 
 
@@ -28,8 +28,8 @@ def test_get_cumulative_activity():
     libra_sample1 = LIBRASample([sample1, sample2], "01/01/2023 12:00 PM")
     libra_sample2 = LIBRASample([sample3, sample4], "01/02/2023 12:00 PM")
 
-    # Create LIBRARun instance
-    libra_run = LIBRARun([libra_sample1, libra_sample2], "01/01/2023 12:00 PM")
+    # Create GasStream instance
+    libra_run = GasStream([libra_sample1, libra_sample2], "01/01/2023 12:00 PM")
 
     # Test cumulative activity
     cumulative_activity = libra_run.get_cumulative_activity()
@@ -49,8 +49,8 @@ def test_get_cumulative_activity_without_background_subtracted():
     # Create LIBRASample instance
     libra_sample = LIBRASample([sample1, sample2], "01/01/2023 12:00 PM")
 
-    # Create LIBRARun instance
-    libra_run = LIBRARun([libra_sample], "01/01/2023 12:00 PM")
+    # Create GasStream instance
+    libra_run = GasStream([libra_sample], "01/01/2023 12:00 PM")
 
     # Test cumulative activity without background subtracted
     with pytest.raises(
@@ -69,9 +69,9 @@ def test_relative_times():
     libra_sample1 = LIBRASample([sample1], "01/02/2023 12:00 PM")
     libra_sample2 = LIBRASample([sample2], "01/03/2023 12:00 PM")
 
-    # Create LIBRARun instance
+    # Create GasStream instance
     start_time = "01/01/2023 12:00 PM"
-    libra_run = LIBRARun([libra_sample1, libra_sample2], start_time)
+    libra_run = GasStream([libra_sample1, libra_sample2], start_time)
 
     # Test relative times
     relative_times = libra_run.relative_times
