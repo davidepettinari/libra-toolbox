@@ -1,4 +1,8 @@
 import pandas as pd
+from typing import List
+import pint
+from libra_toolbox.tritium.model import ureg
+from datetime import datetime
 
 
 class LSCFileReader:
@@ -44,3 +48,89 @@ class LSCFileReader:
 
     def get_lum(self):
         return self.data["LUM"].tolist()
+
+
+class LSCSample:
+    def __init__(self, activity: pint.Quantity, name: str):
+        self.activity = activity
+        self.name = name
+        # TODO add other attributes available in LSC file
+        self.background_substracted = False
+
+    def __str__(self):
+        return f"Sample {self.name}"
+
+    def substract_background(self, background_sample: "LSCSample"):
+        if self.background_substracted:
+            raise ValueError("Background already substracted")
+        self.activity -= background_sample.activity
+        self.background_substracted = True
+
+    @staticmethod
+    def from_file(file_reader: LSCFileReader, vial_name):
+        values = file_reader.get_bq1_values_with_labels()
+        activity = values[vial_name] * ureg.Bq
+        return LSCSample(activity, vial_name)
+
+
+class LIBRASample:
+    def __init__(self, samples: List[LSCSample], time: str):
+        self.samples = samples
+        self._time = time
+
+    def get_relative_time(self, start_time: str):
+
+        start_time = datetime.strptime(start_time, "%m/%d/%Y %I:%M %p")
+        sample_time = datetime.strptime(self._time, "%m/%d/%Y %I:%M %p")
+        return sample_time - start_time
+
+    def substract_background(self, background_sample: LSCSample):
+        for sample in self.samples:
+            sample.substract_background(background_sample)
+
+    def get_soluble_activity(self):
+        act = 0
+        for sample in self.samples[:2]:
+            act += sample.activity
+
+        return act
+
+    def get_insoluble_activity(self):
+        act = 0
+        for sample in self.samples[2:]:
+            act += sample.activity
+
+        return act
+
+    def get_total_activity(self):
+        return self.get_soluble_activity() + self.get_insoluble_activity()
+
+
+class LIBRARun:
+    def __init__(self, samples: List[LIBRASample], start_time: str):
+        self.samples = samples
+        self.start_time = start_time
+
+    def get_cumulative_activity(self, form: str = "total"):
+        # check that background has been substracted
+        for sample in self.samples:
+            for lsc_sample in sample.samples:
+                if not lsc_sample.background_substracted:
+                    raise ValueError(
+                        "Background must be substracted before calculating cumulative activity"
+                    )
+        cumulative_activity = []
+        for sample in self.samples:
+            if form == "total":
+                cumulative_activity.append(sample.get_total_activity())
+            elif form == "soluble":
+                cumulative_activity.append(sample.get_soluble_activity())
+            elif form == "insoluble":
+                cumulative_activity.append(sample.get_insoluble_activity())
+        cumulative_activity = pint.Quantity.from_list(cumulative_activity)
+        cumulative_activity = cumulative_activity.cumsum()
+        return cumulative_activity
+
+    @property
+    def relative_times(self):
+        return [sample.get_relative_time(self.start_time) for sample in self.samples]
