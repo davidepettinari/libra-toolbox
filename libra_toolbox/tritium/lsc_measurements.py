@@ -73,6 +73,11 @@ class LSCSample:
         if self.background_substracted:
             raise ValueError("Background already substracted")
         self.activity -= background_sample.activity
+        if self.activity.magnitude < 0:
+            warnings.warn(
+                f"Activity of {self.name} is negative after substracting background. Setting to zero."
+            )
+            self.activity = 0 * ureg.Bq
         self.background_substracted = True
 
     @staticmethod
