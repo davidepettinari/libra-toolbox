@@ -35,6 +35,18 @@ def test_lscsample_substract_background():
         sample.substract_background(background_sample)
 
 
+def test_lscsample_substract_background_when_negative():
+    sample = LSCSample(0.5 * ureg.Bq, "Sample1")
+    background_sample = LSCSample(1.0 * ureg.Bq, "Background")
+    with pytest.warns(
+        UserWarning,
+        match=f"Activity of {sample.name} is negative after substracting background. Setting to zero.",
+    ):
+        sample.substract_background(background_sample)
+    assert sample.activity == 0 * ureg.Bq
+    assert sample.background_substracted
+
+
 def test_lscsample_from_file():
     file_reader = LSCFileReader(
         Path(__file__).parent / "TEST_CSV.csv",
