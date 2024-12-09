@@ -1,12 +1,13 @@
 # building the MIT-VaultLab neutron generator
 # angular and energy distribution
 
+from pathlib import Path
 import numpy as np
 import h5py
 import openmc
 
 
-def mvng_source_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)):
+def neutron_source_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)):
     '''method for building the MIT-VaultLab neutron generator in OpenMC
     with data tabulated from John Ball and Shon Mackie characterization
     via diamond detectors
@@ -23,7 +24,10 @@ def mvng_source_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)):
 
     angles = ["0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150"]
 
-    with h5py.File('mvng_source_diamond.h5', 'r') as mvng_source:
+    filename = 'neutron_source_diamond.h5'
+    filename = str(Path(__file__).parent) / Path(filename)
+
+    with h5py.File(filename, 'r') as mvng_source:
         # energy values
         energies = mvng_source['values/table']['Energy (MeV)'] * 1e6
         # angular bins in [0, pi)
