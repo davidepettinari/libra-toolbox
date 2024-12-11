@@ -2,25 +2,35 @@
 # angular and energy distribution
 
 from pathlib import Path
+from collections.abc import Iterable
 import pandas as pd
 import numpy as np
 import h5py
 import openmc
 
 
-def A325_generator_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)):
-    """method for building the MIT-VaultLab A-325 neutron generator in OpenMC
+def A325_generator_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)) -> Iterable[openmc.Source]:
+    """
+    Builds the MIT-VaultLab A-325 neutron generator in OpenMC
     with data tabulated from John Ball and Shon Mackie characterization
     via diamond detectors
 
     Parameters
     ----------
-    center : coordinate position of the source (it is a point source)
-
-    reference_uvw : direction for the polar angle (tuple or list of versors)
+    center : tuple, optional
+        coordinate position of the source (it is a point source),
+        by default (0, 0, 0)
+    reference_uvw : tuple, optional
+        direction for the polar angle (tuple or list of versors)
     it is the same for the openmc.PolarAzimuthal class
     more specifically, polar angle = 0 is the direction of the D accelerator
-    towards the Zr-T target
+    towards the Zr-T target, by default (0, 0, 1)
+
+    Returns
+    -------
+    Iterable[openmc.Source]
+        list of openmc neutron sources with angular and energy distribution 
+        and total strenght of 1
     """
 
     filename = "A325_generator_diamond.h5"
