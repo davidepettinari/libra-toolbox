@@ -2,13 +2,14 @@
 # angular and energy distribution
 
 from pathlib import Path
+import pandas as pd
 import numpy as np
 import h5py
 import openmc
 
 
-def neutron_source_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)):
-    """method for building the MIT-VaultLab neutron generator in OpenMC
+def A325_generator_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)):
+    """method for building the MIT-VaultLab A-325 neutron generator in OpenMC
     with data tabulated from John Ball and Shon Mackie characterization
     via diamond detectors
 
@@ -22,17 +23,18 @@ def neutron_source_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)):
     towards the Zr-T target
     """
 
-    angles = ["0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150"]
-
-    filename = "neutron_source_diamond.h5"
+    filename = "A325_generator_diamond.h5"
     filename = str(Path(__file__).parent) / Path(filename)
 
-    with h5py.File(filename, "r") as mvng_source:
+    with h5py.File(filename, "r") as source:
+        df = pd.DataFrame(source["values/table"][()]).drop(columns='index')
         # energy values
-        energies = mvng_source["values/table"]["Energy (MeV)"] * 1e6
+        energies = np.array(df["Energy (MeV)"]) * 1e6
+        # angle column names
+        angles = df.columns[1:]
         # angular bins in [0, pi)
         pbins = np.cos([np.deg2rad(float(a)) for a in angles] + [np.pi])
-        spectra = [mvng_source["values/table"][col] for col in angles]
+        spectra = [np.array(source[col]) for col in angles]
 
     # yield values for strengths
     yields = np.sum(spectra, axis=-1) * np.diff(pbins)
