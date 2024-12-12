@@ -28,7 +28,6 @@ def A325_generator_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)) -> Iterabl
 
     Returns
     -------
-    Iterable[openmc.Source]
         list of openmc neutron sources with angular and energy distribution 
         and total strength of 1
     """
