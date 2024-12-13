@@ -43,7 +43,7 @@ def A325_generator_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)) -> Iterabl
         angles = df.columns[1:]
         # angular bins in [0, pi)
         pbins = np.cos([np.deg2rad(float(a)) for a in angles] + [np.pi])
-        spectra = [np.array(source[col]) for col in angles]
+        spectra = [np.array(df[col]) for col in angles]
 
     # yield values for strengths
     yields = np.sum(spectra, axis=-1) * np.diff(pbins)
