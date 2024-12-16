@@ -7,13 +7,21 @@ import warnings
 
 
 class LSCFileReader:
-    def __init__(self, file_path, vial_labels=None):
+    def __init__(self, file_path, vial_labels=None, labels_column: str = None):
         self.file_path = file_path
         self.vial_labels = vial_labels
+        self.labels_column = labels_column
         self.data = None
         self.header_content = None
 
     def read_file(self):
+
+        # check if vial_labels or labels_column is provided
+        if (self.labels_column is None and self.vial_labels is None) or (
+            self.labels_column is not None and self.vial_labels is not None
+        ):
+            raise ValueError("Provide either vial_labels or labels_column")
+
         # first read the file without dataframe to find the line starting with S#
         header_lines = []
         with open(self.file_path, "r") as file:
@@ -33,6 +41,9 @@ class LSCFileReader:
             warnings.warn(
                 "There seem to be an issue with the last column. Is the format of the file correct?"
             )
+
+        if self.labels_column is not None:
+            self.vial_labels = self.data[self.labels_column].tolist()
 
     def get_bq1_values(self):
         return self.data["Bq:1"].tolist()
