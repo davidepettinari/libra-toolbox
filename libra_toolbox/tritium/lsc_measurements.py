@@ -108,6 +108,14 @@ class LSCSample:
         return f"Sample {self.name}"
 
     def substract_background(self, background_sample: "LSCSample"):
+        """Substracts the background activity from the sample activity
+
+        Args:
+            background_sample (LSCSample): Background sample
+
+        Raises:
+            ValueError: If background has already been substracted
+        """
         if self.background_substracted:
             raise ValueError("Background already substracted")
         self.activity -= background_sample.activity
@@ -119,7 +127,19 @@ class LSCSample:
         self.background_substracted = True
 
     @staticmethod
-    def from_file(file_reader: LSCFileReader, vial_name):
+    def from_file(file_reader: LSCFileReader, vial_name: str) -> "LSCSample":
+        """Creates an LSCSample object from a LSCFileReader object
+
+        Args:
+            file_reader (LSCFileReader): LSCFileReader object
+            vial_name: Name of the vial
+
+        Raises:
+            ValueError: If vial_name is not found in the file reader
+
+        Returns:
+            the LSCSample object
+        """
         values = file_reader.get_bq1_values_with_labels()
         if vial_name not in values:
             raise ValueError(f"Vial {vial_name} not found in the file reader.")
