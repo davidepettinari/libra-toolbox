@@ -5,6 +5,8 @@ from libra_toolbox.tritium import ureg
 from datetime import datetime, timedelta
 import warnings
 
+DATE_FORMAT = "%m/%d/%Y %I:%M %p"
+
 
 class LSCFileReader:
     def __init__(
@@ -150,13 +152,20 @@ class LSCSample:
 class LIBRASample:
     samples: List[LSCSample]
 
-    def __init__(self, samples: List[LSCSample], time: str):
+    def __init__(self, samples: List[LSCSample], time: str | datetime):
         self.samples = samples
-        self._time = time
 
-    def get_relative_time(self, start_time: str) -> timedelta:
-        start_time = datetime.strptime(start_time, "%m/%d/%Y %I:%M %p")
-        sample_time = datetime.strptime(self._time, "%m/%d/%Y %I:%M %p")
+        if isinstance(time, str):
+            self._time = datetime.strptime(time, DATE_FORMAT)
+        else:
+            self._time = time
+
+    def get_relative_time(self, start_time: str | datetime) -> timedelta:
+
+        if isinstance(start_time, str):
+            start_time = datetime.strptime(start_time, DATE_FORMAT)
+
+        sample_time = self._time
         return sample_time - start_time
 
     def substract_background(self, background_sample: LSCSample):
@@ -184,9 +193,12 @@ class LIBRASample:
 class GasStream:
     samples: List[LIBRASample]
 
-    def __init__(self, samples: List[LIBRASample], start_time: str):
+    def __init__(self, samples: List[LIBRASample], start_time: str | datetime):
         self.samples = samples
-        self.start_time = start_time
+        if isinstance(start_time, str):
+            self.start_time = datetime.strptime(start_time, DATE_FORMAT)
+        else:
+            self.start_time = start_time
 
     def get_cumulative_activity(self, form: str = "total"):
         # check that background has been substracted
@@ -219,9 +231,12 @@ class GasStream:
 
 
 class LIBRARun:
-    def __init__(self, streams: List[GasStream], start_time: str):
+    def __init__(self, streams: List[GasStream], start_time: str | datetime):
         self.streams = streams
-        self.start_time = start_time
+        if isinstance(start_time, str):
+            self.start_time = datetime.strptime(start_time, DATE_FORMAT)
+        else:
+            self.start_time = start_time
 
 
 class BABY100mLRun(LIBRARun):
