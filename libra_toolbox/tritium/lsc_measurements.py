@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import List
+from typing import List, Dict
 import pint
 from libra_toolbox.tritium import ureg
 from datetime import datetime, timedelta
@@ -7,13 +7,40 @@ import warnings
 
 
 class LSCFileReader:
-    def __init__(self, file_path, vial_labels=None):
+    def __init__(
+        self,
+        file_path: str,
+        vial_labels: List[str | None] = None,
+        labels_column: str = None,
+    ):
+        """Reads a LSC file and extracts the Bq:1 values and labels
+
+        Args:
+            file_path: Path to the LSC file.
+            vial_labels: List of vial labels. Defaults to None.
+            labels_column: Column name in the file that contains the vial labels. Defaults to None.
+        """
         self.file_path = file_path
         self.vial_labels = vial_labels
+        self.labels_column = labels_column
         self.data = None
         self.header_content = None
 
     def read_file(self):
+        """
+        Reads the LSC file and extracts the data in self.data and the vial labels
+        (if provided) in self.vial_labels
+
+        Raises:
+            ValueError: If both vial_labels and labels_column are provided or if none of them are provided
+        """
+
+        # check if vial_labels or labels_column is provided
+        if (self.labels_column is None and self.vial_labels is None) or (
+            self.labels_column is not None and self.vial_labels is not None
+        ):
+            raise ValueError("Provide either vial_labels or labels_column")
+
         # first read the file without dataframe to find the line starting with S#
         header_lines = []
         with open(self.file_path, "r") as file:
@@ -34,10 +61,21 @@ class LSCFileReader:
                 "There seem to be an issue with the last column. Is the format of the file correct?"
             )
 
-    def get_bq1_values(self):
+        if self.labels_column is not None:
+            self.vial_labels = self.data[self.labels_column].tolist()
+
+    def get_bq1_values(self) -> List[float]:
         return self.data["Bq:1"].tolist()
 
-    def get_bq1_values_with_labels(self):
+    def get_bq1_values_with_labels(self) -> Dict[str, float]:
+        """Returns a dictionary with vial labels as keys and Bq:1 values as values
+
+        Raises:
+            ValueError: If vial labels are not provided
+
+        Returns:
+            Dictionary with vial labels as keys and Bq:1 values as values
+        """
         if self.vial_labels is None:
             raise ValueError("Vial labels must be provided")
 
@@ -50,10 +88,10 @@ class LSCFileReader:
 
         return labelled_values
 
-    def get_count_times(self):
+    def get_count_times(self) -> List[float]:
         return self.data["Count Time"].tolist()
 
-    def get_lum(self):
+    def get_lum(self) -> List[float]:
         return self.data["LUM"].tolist()
 
 
@@ -70,6 +108,14 @@ class LSCSample:
         return f"Sample {self.name}"
 
     def substract_background(self, background_sample: "LSCSample"):
+        """Substracts the background activity from the sample activity
+
+        Args:
+            background_sample (LSCSample): Background sample
+
+        Raises:
+            ValueError: If background has already been substracted
+        """
         if self.background_substracted:
             raise ValueError("Background already substracted")
         self.activity -= background_sample.activity
@@ -81,7 +127,19 @@ class LSCSample:
         self.background_substracted = True
 
     @staticmethod
-    def from_file(file_reader: LSCFileReader, vial_name):
+    def from_file(file_reader: LSCFileReader, vial_name: str) -> "LSCSample":
+        """Creates an LSCSample object from a LSCFileReader object
+
+        Args:
+            file_reader (LSCFileReader): LSCFileReader object
+            vial_name: Name of the vial
+
+        Raises:
+            ValueError: If vial_name is not found in the file reader
+
+        Returns:
+            the LSCSample object
+        """
         values = file_reader.get_bq1_values_with_labels()
         if vial_name not in values:
             raise ValueError(f"Vial {vial_name} not found in the file reader.")

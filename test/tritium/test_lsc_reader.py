@@ -31,3 +31,19 @@ def test_lsc_reader():
 
     assert len(bq1_values) == 14
     assert len(bq1_values_with_labels) == 13
+
+
+def test_lsc_reader_label_automated():
+    """
+    Test LSCFileReader with labels_column provided
+    """
+    filename = Path(__file__).parent / "test_lsc_file_with_labels.csv"
+
+    csv_reader = LSCFileReader(filename, labels_column="SMPL_ID")
+    csv_reader.read_file()
+
+    bq1_values = csv_reader.get_bq1_values()
+    bq1_values_with_labels = csv_reader.get_bq1_values_with_labels()
+
+    assert len(bq1_values) == 10
+    assert len(bq1_values_with_labels) == 10
