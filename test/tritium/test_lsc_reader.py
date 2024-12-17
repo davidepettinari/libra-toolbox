@@ -47,3 +47,13 @@ def test_lsc_reader_label_automated():
 
     assert len(bq1_values) == 10
     assert len(bq1_values_with_labels) == 10
+
+
+def test_read_quench_set():
+    """Tests reading the quench set from the LSC file"""
+    filename = Path(__file__).parent / "test_lsc_file_with_labels.csv"
+
+    csv_reader = LSCFileReader(filename, labels_column="SMPL_ID")
+    csv_reader.read_file()
+
+    assert csv_reader.quench_set == "Low Energy: 3H-UG"
