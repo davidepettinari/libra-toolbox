@@ -11,6 +11,8 @@ DATE_FORMAT = "%m/%d/%Y %I:%M %p"
 
 
 class LSCFileReader:
+    quench_set: str
+
     def __init__(
         self,
         file_path: str,
@@ -29,6 +31,7 @@ class LSCFileReader:
         self.labels_column = labels_column
         self.data = None
         self.header_content = None
+        self.quench_set = None
 
     def read_file(self):
         """
@@ -50,12 +53,14 @@ class LSCFileReader:
         with open(self.file_path, "r") as file:
             lines = file.readlines()
             for i, line in enumerate(lines):
+                if line.startswith("Quench Set:"):
+                    quench_set_line_idx = i + 1
                 if line.startswith("S#"):
                     start = i
                     break
                 header_lines.append(line)
         self.header_content = "".join(header_lines)
-
+        self.quench_set = lines[quench_set_line_idx].strip()
         # read the file with dataframe starting from the line with S#
         self.data = pd.read_csv(self.file_path, skiprows=start)
 
