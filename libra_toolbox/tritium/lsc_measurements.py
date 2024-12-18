@@ -106,12 +106,14 @@ class LSCFileReader:
 
 class LSCSample:
     activity: pint.Quantity
+    origin_file: str
 
     def __init__(self, activity: pint.Quantity, name: str):
         self.activity = activity
         self.name = name
         # TODO add other attributes available in LSC file
         self.background_substracted = False
+        self.origin_file = None
 
     def __str__(self):
         return f"Sample {self.name}"
@@ -153,7 +155,9 @@ class LSCSample:
         if vial_name not in values:
             raise ValueError(f"Vial {vial_name} not found in the file reader.")
         activity = values[vial_name] * ureg.Bq
-        return LSCSample(activity, vial_name)
+        sample = LSCSample(activity, vial_name)
+        sample.origin_file = file_reader.file_path
+        return sample
 
 
 class LIBRASample:
