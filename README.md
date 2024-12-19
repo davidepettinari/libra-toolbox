@@ -6,6 +6,15 @@
 
 `libra-toolbox` relies on Python. You can install it from the official website: [python.org](https://www.python.org/downloads/).
 
+Install OpenMC:
+
+If you want to run openmc functions, [install OpenMC](https://docs.openmc.org/en/stable/quickinstall.html) with conda:
+
+```
+conda install -c conda-forge openmc>=0.14.0
+```
+
+
 To install `libra-toolbox`, use pip:
 
 ```bash
