@@ -77,7 +77,7 @@ class LSCFileReader:
             self.vial_labels = self.data[self.labels_column].tolist()
 
     def get_bq1_values(self) -> List[float]:
-        assert self.data
+        assert self.data is not None
         return self.data["Bq:1"].tolist()
 
     def get_bq1_values_with_labels(self) -> Dict[str | None, float]:
@@ -102,11 +102,11 @@ class LSCFileReader:
         return labelled_values
 
     def get_count_times(self) -> List[float]:
-        assert self.data
+        assert self.data is not None
         return self.data["Count Time"].tolist()
 
     def get_lum(self) -> List[float]:
-        assert self.data
+        assert self.data is not None
         return self.data["LUM"].tolist()
 
 
