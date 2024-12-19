@@ -8,7 +8,7 @@
 
 Install OpenMC:
 
-If you want to run openmc functions, [install OpenMC](https://docs.openmc.org/en/stable/quickinstall.html) with conda:
+If you want to run OpenMC functions, [install OpenMC](https://docs.openmc.org/en/stable/quickinstall.html) with conda:
 
 ```
 conda install -c conda-forge openmc>=0.14.0
