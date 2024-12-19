@@ -67,7 +67,7 @@ def A325_generator_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)) -> Iterabl
         )
         strength = yields[i]
 
-        my_source = openmc.Source(
+        my_source = openmc.IndependentSource(
             space=space,
             angle=angle,
             energy=energy,
