@@ -203,13 +203,18 @@ class LIBRASample:
 
 class GasStream:
     samples: List[LIBRASample]
+    name: str
 
-    def __init__(self, samples: List[LIBRASample], start_time: str | datetime):
+    def __init__(
+        self, samples: List[LIBRASample], start_time: str | datetime, name: str = None
+    ):
         self.samples = samples
         if isinstance(start_time, str):
             self.start_time = datetime.strptime(start_time, DATE_FORMAT)
         else:
             self.start_time = start_time
+
+        self.name = name
 
     def get_cumulative_activity(self, form: str = "total"):
         # check that background has been substracted
