@@ -100,3 +100,15 @@ def test_lscsample_from_file_when_not_found():
         ValueError, match="Vial coucoucou not found in the file reader."
     ):
         LSCSample.from_file(file_reader, "coucoucou")
+
+
+def test_lsc_sample_has_origin_file():
+    """Test that the origin file is set when creating a LSCSample from a LSCFileReader"""
+    filename = Path(__file__).parent / "test_lsc_file_with_labels.csv"
+
+    csv_reader = LSCFileReader(filename, labels_column="SMPL_ID")
+    csv_reader.read_file()
+
+    sample = LSCSample.from_file(csv_reader, "1L-IV_2-0-4")
+
+    assert sample.origin_file == filename
