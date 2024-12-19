@@ -1,9 +1,11 @@
 import pandas as pd
 from typing import List, Dict
 import pint
+import pint.facets
 from libra_toolbox.tritium import ureg
 from datetime import datetime, timedelta
 import warnings
+from typing import Literal
 
 
 # config
@@ -11,7 +13,8 @@ DATE_FORMAT = "%m/%d/%Y %I:%M %p"
 
 
 class LSCFileReader:
-    quench_set: str
+    quench_set: str | None
+    data: pd.DataFrame | None
 
     def __init__(
         self,
@@ -74,9 +77,10 @@ class LSCFileReader:
             self.vial_labels = self.data[self.labels_column].tolist()
 
     def get_bq1_values(self) -> List[float]:
+        assert self.data
         return self.data["Bq:1"].tolist()
 
-    def get_bq1_values_with_labels(self) -> Dict[str, float]:
+    def get_bq1_values_with_labels(self) -> Dict[str | None, float]:
         """Returns a dictionary with vial labels as keys and Bq:1 values as values
 
         Raises:
@@ -98,15 +102,17 @@ class LSCFileReader:
         return labelled_values
 
     def get_count_times(self) -> List[float]:
+        assert self.data
         return self.data["Count Time"].tolist()
 
     def get_lum(self) -> List[float]:
+        assert self.data
         return self.data["LUM"].tolist()
 
 
 class LSCSample:
     activity: pint.Quantity
-    origin_file: str
+    origin_file: str | None
 
     def __init__(self, activity: pint.Quantity, name: str):
         self.activity = activity
@@ -203,11 +209,21 @@ class LIBRASample:
 
 class GasStream:
     samples: List[LIBRASample]
-    name: str
+    name: str | None
 
     def __init__(
-        self, samples: List[LIBRASample], start_time: str | datetime, name: str = None
+        self,
+        samples: List[LIBRASample],
+        start_time: str | datetime,
+        name: str | None = None,
     ):
+        """Creates a GasStream object from a list of LIBRASample objects
+
+        Args:
+            samples: a list of LIBRASample objects
+            start_time: the start time at which the gas stream was collected
+            name: a name for the GasStream. Defaults to None.
+        """
         self.samples = samples
         if isinstance(start_time, str):
             self.start_time = datetime.strptime(start_time, DATE_FORMAT)
@@ -216,14 +232,29 @@ class GasStream:
 
         self.name = name
 
-    def get_cumulative_activity(self, form: str = "total"):
+    def get_cumulative_activity(
+        self, form: Literal["total", "soluble", "insoluble"] = "total"
+    ):
+        """Calculates the cumulative activity of the gas stream
+
+        Args:
+            form: the form in which the cumulative activity is calculated.
+
+        Raises:
+            ValueError: If background has not been substracted
+
+        Returns:
+            the cumulative activity as a pint.Quantity object
+        """
         # check that background has been substracted
-        for sample in self.samples:
-            for lsc_sample in sample.samples:
-                if not lsc_sample.background_substracted:
-                    raise ValueError(
-                        "Background must be substracted before calculating cumulative activity"
-                    )
+        if any(
+            not lsc_sample.background_substracted
+            for sample in self.samples
+            for lsc_sample in sample.samples
+        ):
+            raise ValueError(
+                "Background must be substracted before calculating cumulative activity"
+            )
         cumulative_activity = []
         for sample in self.samples:
             if form == "total":
@@ -237,11 +268,19 @@ class GasStream:
         return cumulative_activity
 
     @property
-    def relative_times(self):
+    def relative_times(self) -> List[timedelta]:
+        """
+        The relative times of the samples in the GasStream based on the start_time
+        as a list of timedelta objects
+        """
         return [sample.get_relative_time(self.start_time) for sample in self.samples]
 
     @property
-    def relative_times_as_pint(self):
+    def relative_times_as_pint(self) -> pint.facets.plain.PlainQuantity:
+        """
+        The relative times of the samples in the GasStream based on the start_time
+        as a pint.Quantity object
+        """
         times = [t.total_seconds() * ureg.s for t in self.relative_times]
         return ureg.Quantity.from_list(times).to(ureg.day)
 
