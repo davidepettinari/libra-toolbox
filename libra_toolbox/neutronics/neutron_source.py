@@ -6,8 +6,17 @@ from collections.abc import Iterable
 import pandas as pd
 import numpy as np
 
+try:
+    import h5py
+    import openmc
+    from openmc import IndependentSource
+except ModuleNotFoundError:
+    pass
 
-def A325_generator_diamond(center=(0, 0, 0), reference_uvw=(0, 0, 1)) -> Iterable:
+
+def A325_generator_diamond(
+    center=(0, 0, 0), reference_uvw=(0, 0, 1)
+) -> "Iterable[IndependentSource]":
     """
     Builds the MIT-VaultLab A-325 neutron generator in OpenMC
     with data tabulated from John Ball and Shon Mackie characterization
