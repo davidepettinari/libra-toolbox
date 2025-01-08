@@ -1,7 +1,6 @@
 import openmc
 import openmc.model
 import numpy as np
-from helpers import translate_surface
 
 # needed to download cross sections on the fly
 import openmc_data_downloader as odd
