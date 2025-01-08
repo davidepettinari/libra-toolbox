@@ -13,6 +13,49 @@ def build_vault_model(
     added_materials=[],
     overall_exclusion_region=None,
 ) -> openmc.model.Model:
+    """
+    Builds a complete OpenMC model for a simulation setup representing a
+    shielding system for MIT Vault Laboratory.
+
+    Parameters:
+    ----------
+    settings : openmc.Settings, optional
+        An instance of `openmc.Settings` to configure simulation parameters.
+        If not specified, default settings are used.
+
+    tallies : openmc.Tallies, optional
+        An instance of `openmc.Tallies` to define the tallies to be collected
+        during the simulation. Default is an empty object.
+
+    added_cells : list of openmc.Cell, optional
+        A list of additional cells to include in the geometry.
+        Useful for extending the model with custom objects.
+
+    added_materials : list of openmc.Material, optional
+        A list of additional materials to include in the model.
+        This allows for the inclusion of non-default materials.
+
+    overall_exclusion_region : openmc.Region, optional
+        An optional region that defines areas to exclude in the construction
+        of the vault geometry. Can be used to simulate voids or areas without
+        specific materials.
+
+    Returns:
+    -------
+    openmc.model.Model
+        A complete OpenMC model instance, ready for simulation.
+        Includes specified materials, geometry, settings, and tallies.
+
+    Notes:
+    -----
+    - The model includes a wide range of standard materials, such as concrete,
+      steel, lead, and borated polyethylene, along with a detailed geometry
+      based on predefined surfaces.
+    - The function automatically downloads ENDFB-8.0 cross-section data
+      for neutrons using the `openmc_data_downloader` library.
+    - If an `overall_exclusion_region` is provided, it will be incorporated
+      to exclude specific parts of the geometry.
+    """
 
     materials = openmc.Materials(
         [
