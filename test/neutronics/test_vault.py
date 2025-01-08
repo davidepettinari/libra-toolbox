@@ -4,6 +4,7 @@ import pytest
 
 
 def test_vault_model():
+    """Test that the vault model can be created and run without errors"""
     try:
         import openmc
     except ImportError:
