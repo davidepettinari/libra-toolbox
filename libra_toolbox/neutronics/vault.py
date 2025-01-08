@@ -97,7 +97,7 @@ def build_vault_model(
     #
     # North B-HDPE shield in entrance to Vault in Room III
     Surface_17 = openmc.model.RectangularParallelepiped(
-        -38.1, 0.0, 466.4, 499.42, 10.16, 213.35999999999999
+        -38.1, 0.0, 466.4, 499.42, 10.16, 213.36
     )
 
     # The northern Ricorad extra Vault door shielding in Room III
@@ -106,7 +106,7 @@ def build_vault_model(
     #
     # South B-HDPE shield in entrance to Vault in Room III
     Surface_18 = openmc.model.RectangularParallelepiped(
-        -38.1, 0.0, 281.33, 314.35, 10.16, 213.35999999999999
+        -38.1, 0.0, 281.33, 314.35, 10.16, 213.36
     )
 
     # The southern Ricorad extra Vault door shielding in Room III
@@ -124,7 +124,7 @@ def build_vault_model(
     #
     # Surface definition for east iron-brick pile around DANTE selection magnet
     Surface_9 = openmc.model.RectangularParallelepiped(
-        830.58, 878.84, 412.74, 538.47, 10.16, 135.89000000000001
+        830.58, 878.84, 412.74, 538.47, 10.16, 135.89
     )
 
     # The eastern DANTE beamline (Fe or Pb fill?) concrete block shield
@@ -173,7 +173,7 @@ def build_vault_model(
     #
     # 38
     Surface_38 = openmc.model.RectangularParallelepiped(
-        -104.9, 45.1, 281.33, 499.42, 10.16, 213.35999999999999
+        -104.9, 45.1, 281.33, 499.42, 10.16, 213.36
     )
 
     #
@@ -226,23 +226,13 @@ def build_vault_model(
     #
     # 83
     Surface_83 = openmc.model.RectangularParallelepiped(
-        1135.9 - 1104.9,
-        1147.3300000000002 - 1104.9,
-        138.75 - 99.38,
-        628.97 - 99.38,
-        297.18,
-        299.72,
+        31.0, 42.43, 39.37, 529.59, 297.18, 299.72
     )
 
     #
     # 84
     Surface_84 = openmc.model.RectangularParallelepiped(
-        1140.35 - 1104.9,
-        1142.8899999999999 - 1104.9,
-        138.75 - 99.38,
-        628.97 - 99.38,
-        276.86,
-        299.72,
+        35.45, 37.99, 39.37, 529.59, 276.86, 299.72
     )
 
     # The I-beam support the main Vault shield door in Room III
@@ -251,13 +241,13 @@ def build_vault_model(
     #
     # Inner surface defining the top/bottom DANTE selection magnets
     Surface_28 = openmc.model.RightCircularCylinder(
-        (1858.01 - 1104.9, 597.22 - 99.38, 99.7), 75.0, 20.95, axis="z"
+        (753.11, 497.84, 99.7), 75.0, 20.95, axis="z"
     )
 
     #
     # Outer surface defining the bottom DANTE selection magnet
     Surface_30 = openmc.model.RightCircularCylinder(
-        (1858.01 - 1104.9, 597.22 - 99.38, 99.7), 8.0, 32.0, axis="z"
+        (753.11, 497.84, 99.7), 8.0, 32.0, axis="z"
     )
 
     # The bottom DANTE beamline selection magnet in Room III
@@ -266,7 +256,7 @@ def build_vault_model(
     #
     # Outer surface defining the top DANTE selection magnet
     Surface_35 = openmc.model.RightCircularCylinder(
-        (1858.01 - 1104.9, 597.22 - 99.38, 115.83), 8.0, 32.0, axis="z"
+        (753.11, 497.84, 115.83), 8.0, 32.0, axis="z"
     )
 
     # The top DANTE beamline selection magnet in Room III
@@ -275,67 +265,37 @@ def build_vault_model(
     #
     # Surface definition for selection magnet cutout of surface #27
     Surface_21 = openmc.model.RectangularParallelepiped(
-        1825.87 - 1104.9,
-        1890.1399999999999 - 1104.9,
-        571.9 - 99.38,
-        621.9 - 99.38,
-        99.7,
-        123.83,
+        (720.97, 785.24, 472.52, 522.52, 99.7, 123.83)
     )
 
     #
     # Surface definition of square box that contains DANTE selection magnets
     Surface_27 = openmc.model.RectangularParallelepiped(
-        1816.1 - 1104.9,
-        1899.9199999999998 - 1104.9,
-        576.9 - 99.38,
-        617.54 - 99.38,
-        89.54,
-        133.99,
+        711.2, 795.02, 477.52, 518.16, 89.54, 133.99
     )
 
     #
     # Selection magnet SE support leg
     Surface_29 = openmc.model.RectangularParallelepiped(
-        1892.3 - 1104.9,
-        1899.9199999999998 - 1104.9,
-        576.9 - 99.38,
-        584.52 - 99.38,
-        10.16,
-        88.89999999999999,
+        787.4, 795.02, 477.52, 485.14, 10.16, 88.9
     )
 
     #
     # Selection magnet NE support leg
     Surface_31 = openmc.model.RectangularParallelepiped(
-        1892.3 - 1104.9,
-        1899.9199999999998 - 1104.9,
-        609.92 - 99.38,
-        617.54 - 99.38,
-        10.16,
-        88.89999999999999,
+        787.4, 795.02, 510.54, 518.16, 10.16, 88.9
     )
 
     #
     # Selection magnet SW support leg
     Surface_33 = openmc.model.RectangularParallelepiped(
-        1816.1 - 1104.9,
-        1823.7199999999998 - 1104.9,
-        576.9 - 99.38,
-        584.52 - 99.38,
-        10.16,
-        88.89999999999999,
+        711.2, 718.82, 477.52, 485.14, 10.16, 88.9
     )
 
     #
     # Thin selection magnet table top plate
     Surface_34 = openmc.model.RectangularParallelepiped(
-        1816.1 - 1104.9,
-        1899.9199999999998 - 1104.9,
-        576.9 - 99.38,
-        617.54 - 99.38,
-        88.9,
-        89.54,
+        711.2, 795.02, 477.52, 518.16, 88.9, 89.54
     )
 
     # The DANTE beamline selection magnet stand in Room III
