@@ -60,7 +60,7 @@ def build_vault_model(
 
     # 24
     Surface_24 = openmc.model.RectangularParallelepiped(
-        1023.62 - 1104.9, 2247.9 - 1104.9, 0.0 - 99.38, 749.62 - 99.38, 0.0, 424.18
+        -81.28, 1143.0, -99.38, 650.24, 0.0, 424.18
     )
 
     # with an angle of 2.8 degrees. The positive vector points towards the
@@ -70,7 +70,7 @@ def build_vault_model(
     #
     # Outer surface definition of the foundation underneath all basement labs
     Surface_94 = openmc.model.RectangularParallelepiped(
-        0.0 - 1104.9, 2247.9 - 1104.9, 0.0 - 99.38, 1998.37 - 99.38, -81.28, 0.0
+        -1104.9, 1143.0, -99.38, 1898.99, -81.28, 0.0
     )
 
     # Define Soil cell 3 meters wide
@@ -80,12 +80,7 @@ def build_vault_model(
     #
     # The cuboid defining the outermost boundary of the Vault door in Room III
     Surface_13 = openmc.model.RectangularParallelepiped(
-        1105.41 - 1104.9,
-        1166.3700000000001 - 1104.9,
-        368.0 - 99.38,
-        611.84 - 99.38,
-        0.0,
-        223.52,
+        0.51, 61.47, 268.62, 512.46, 0.0, 223.52
     )
 
     # The plane used to create the 30 degree north-most cut on the Vault door.
@@ -102,12 +97,7 @@ def build_vault_model(
     #
     # North B-HDPE shield in entrance to Vault in Room III
     Surface_17 = openmc.model.RectangularParallelepiped(
-        1066.8 - 1104.9,
-        1104.8999999999999 - 1104.9,
-        565.78 - 99.38,
-        598.8 - 99.38,
-        10.16,
-        213.35999999999999,
+        -38.1, 0.0, 466.4, 499.42, 10.16, 213.35999999999999
     )
 
     # The northern Ricorad extra Vault door shielding in Room III
@@ -116,12 +106,7 @@ def build_vault_model(
     #
     # South B-HDPE shield in entrance to Vault in Room III
     Surface_18 = openmc.model.RectangularParallelepiped(
-        1066.8 - 1104.9,
-        1104.8999999999999 - 1104.9,
-        380.71 - 99.38,
-        413.72999999999996 - 99.38,
-        10.16,
-        213.35999999999999,
+        -38.1, 0.0, 281.33, 314.35, 10.16, 213.35999999999999
     )
 
     # The southern Ricorad extra Vault door shielding in Room III
@@ -130,7 +115,7 @@ def build_vault_model(
     #
     # Surface definition for west iron-brick pile around DANTE selection magnet
     Surface_10 = openmc.model.RectangularParallelepiped(
-        1741.65 - 1104.9, 1808.49 - 1104.9, 512.12 - 99.38, 637.85 - 99.38, 10.16, 152.4
+        636.75, 703.59, 412.74, 538.47, 10.16, 152.4
     )
 
     # The western DANTE beamline (Fe or Pb fill?) concrete block shield
@@ -139,12 +124,7 @@ def build_vault_model(
     #
     # Surface definition for east iron-brick pile around DANTE selection magnet
     Surface_9 = openmc.model.RectangularParallelepiped(
-        1935.48 - 1104.9,
-        1983.74 - 1104.9,
-        512.12 - 99.38,
-        637.85 - 99.38,
-        10.16,
-        135.89000000000001,
+        830.58, 878.84, 412.74, 538.47, 10.16, 135.89000000000001
     )
 
     # The eastern DANTE beamline (Fe or Pb fill?) concrete block shield
@@ -153,13 +133,13 @@ def build_vault_model(
     #
     # 11
     Surface_11 = openmc.model.RightCircularCylinder(
-        (1858.01 - 1104.9, 637.86 - 99.38, 111.76), 111.76, 15.24, axis="y"
+        (753.11, 538.48, 111.76), 111.76, 15.24, axis="y"
     )
 
     #
     # 2
     Surface_22 = openmc.model.RectangularParallelepiped(
-        1699.2 - 1104.9, 2119.2 - 1104.9, 637.85 - 99.38, 668.33 - 99.38, 10.16, 363.22
+        594.3, 1014.3, 538.47, 568.95, 10.16, 363.22
     )
 
     # with an angle of 2.8 degrees. The positive vector points towards the
@@ -175,7 +155,7 @@ def build_vault_model(
     #
     # 36
     Surface_36 = openmc.model.RectangularParallelepiped(
-        1104.9 - 1104.9, 2254.9 - 1104.9, 0.0 - 99.38, 99.38 - 99.38, 0.0, 363.22
+        0.0, 1150.0, -99.38, 0.0, 0.0, 363.22
     )
 
     # The south Vault shield wall in Room III
@@ -184,7 +164,7 @@ def build_vault_model(
     #
     # 16
     Surface_16 = openmc.model.RectangularParallelepiped(
-        2050.0 - 1104.9, 2200.0 - 1104.9, 99.38 - 99.38, 668.34 - 99.38, 0.0, 363.22
+        945.1, 1095.1, 0.0, 568.96, 0.0, 363.22
     )
 
     # The east Vault shield wall in Room III with Room II entrance cutout
@@ -193,18 +173,13 @@ def build_vault_model(
     #
     # 38
     Surface_38 = openmc.model.RectangularParallelepiped(
-        1000.0 - 1104.9,
-        1150.0 - 1104.9,
-        380.71 - 99.38,
-        598.8 - 99.38,
-        10.16,
-        213.35999999999999,
+        -104.9, 45.1, 281.33, 499.42, 10.16, 213.35999999999999
     )
 
     #
     # 39
     Surface_39 = openmc.model.RectangularParallelepiped(
-        1023.62 - 1104.9, 1104.9 - 1104.9, 0.0 - 99.38, 749.62 - 99.38, 0.0, 363.22
+        -81.28, 0.0, -99.38, 650.24, 0.0, 363.22
     )
 
     # The west Vault shield wall in Room III with Vault entrance cutout
@@ -213,7 +188,7 @@ def build_vault_model(
     #
     # 37
     Surface_37 = openmc.model.RectangularParallelepiped(
-        1023.62 - 1104.9, 2253.62 - 1104.9, 0.0 - 99.38, 749.62 - 99.38, 363.22, 424.18
+        -81.28, 1148.72, -99.38, 650.24, 363.22, 424.18
     )
 
     # The top (roof) Vault shield wall in Room III
@@ -222,7 +197,7 @@ def build_vault_model(
     #
     # 12
     Surface_12 = openmc.model.RectangularParallelepiped(
-        1169.67 - 1104.9, 2169.67 - 1104.9, 99.38 - 99.38, 668.34 - 99.38, 0.0, 10.16
+        64.77, 1064.77, 0.0, 568.96, 0.0, 10.16
     )
 
     # The bottom Vault floor in Room III
@@ -230,13 +205,13 @@ def build_vault_model(
 
     # 23
     Surface_23 = openmc.model.RectangularParallelepiped(
-        1104.9 - 1104.9, 2254.9 - 1104.9, 668.34 - 99.38, 749.62 - 99.38, 0.0, 363.22
+        0.0, 1150.0, 568.96, 650.24, 0.0, 363.22
     )
 
     #
     # The cyclotron beamline cutout in the north Vault shield wall
     Surface_102 = openmc.model.RightCircularCylinder(
-        (1422.0 - 1104.9, 668.34 - 99.38, 50.0), 81.28, 5.0, axis="y"
+        (317.1, 568.96, 50.0), 81.28, 5.0, axis="y"
     )
 
     # The north Vault shield wall in Room III with beamline cutouts
@@ -245,12 +220,7 @@ def build_vault_model(
     #
     # 82
     Surface_82 = openmc.model.RectangularParallelepiped(
-        1135.9 - 1104.9,
-        1147.3300000000002 - 1104.9,
-        138.75 - 99.38,
-        628.97 - 99.38,
-        276.86,
-        279.40000000000003,
+        31.0, 42.43, 39.37, 529.59, 276.86, 279.4
     )
 
     #
