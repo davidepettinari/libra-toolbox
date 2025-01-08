@@ -1,40 +1,43 @@
-import openmc
 from libra_toolbox.neutronics import vault
-import numpy as np
 
-point = openmc.stats.Point((500, 200, 100))
-src = openmc.IndependentSource(space=point)
-src.energy = openmc.stats.Discrete([14.1e6], [1.0])
-src.strength = 1.0
+import pytest
 
-settings = openmc.Settings()
-settings.run_mode = "fixed source"
-settings.source = src
-settings.batches = 100
-settings.inactive = 0
-settings.particles = int(1e4)
 
-water = openmc.Material(name="water")
-water.add_element("O", 1 / 3)
-water.add_element("H", 2 / 3)
-water.set_density("g/cc", 1.0)
+def test_vault_model():
+    try:
+        import openmc
+    except ImportError:
+        pytest.skip("OpenMC is not installed")
+    import openmc
 
-water_sphere = openmc.Sphere(
-    r=10, x0=src.space.xyz[0] + 100, y0=src.space.xyz[1], z0=src.space.xyz[2]
-)
-water_cell = openmc.Cell(region=-water_sphere, fill=water)
-overall_exclusion_region = -water_sphere
+    point = openmc.stats.Point((500, 200, 100))
+    src = openmc.IndependentSource(space=point)
+    src.energy = openmc.stats.Discrete([14.1e6], [1.0])
 
-tally = openmc.Tally()
-tally.filters = [openmc.CellFilter(water_cell)]
-tally.scores = ["flux"]
-tallies = openmc.Tallies([tally])
+    settings = openmc.Settings()
+    settings.run_mode = "fixed source"
+    settings.source = src
+    settings.batches = 3
+    settings.inactive = 0
+    settings.particles = int(100)
 
-model = vault.build_vault_model(
-    settings=settings,
-    tallies=tallies,
-    added_cells=[water_cell],
-    added_materials=[water],
-    overall_exclusion_region=overall_exclusion_region,
-)
-model.run(geometry_debug=True)
+    water = openmc.Material(name="water")
+    water.add_element("O", 1 / 3)
+    water.add_element("H", 2 / 3)
+    water.set_density("g/cc", 1.0)
+
+    water_sphere = openmc.Sphere(
+        r=10, x0=src.space.xyz[0] + 100, y0=src.space.xyz[1], z0=src.space.xyz[2]
+    )
+    water_cell = openmc.Cell(region=-water_sphere, fill=water)
+    overall_exclusion_region = -water_sphere
+
+    model = vault.build_vault_model(
+        settings=settings,
+        tallies=openmc.Tallies(),
+        added_cells=[water_cell],
+        added_materials=[water],
+        overall_exclusion_region=overall_exclusion_region,
+    )
+
+    model.run(geometry_debug=True)
