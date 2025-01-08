@@ -265,7 +265,7 @@ def build_vault_model(
     #
     # Surface definition for selection magnet cutout of surface #27
     Surface_21 = openmc.model.RectangularParallelepiped(
-        (720.97, 785.24, 472.52, 522.52, 99.7, 123.83)
+        720.97, 785.24, 472.52, 522.52, 99.7, 123.83
     )
 
     #
