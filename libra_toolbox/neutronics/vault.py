@@ -65,17 +65,12 @@ def build_vault_model(
 
     # with an angle of 2.8 degrees. The positive vector points towards the
     # lower-right (Southeast) corner of the geometry
-    # Surface_49 = openmc.Plane(a=0.99881, b=-0.04885, c=0.0, d=2144.83)
     Surface_49 = openmc.Plane(a=0.99881, b=-0.04885, c=0.0, d=1046.099544)
     #
     # Outer surface definition of the foundation underneath all basement labs
     Surface_94 = openmc.model.RectangularParallelepiped(
         -1104.9, 1143.0, -99.38, 1898.99, -81.28, 0.0
     )
-
-    # Define Soil cell 3 meters wide
-    # East_outer_plane = Surface_49.clone()
-    # East_outer_plane = East_outer_plane.translate([500 * np.cos(np.deg2rad(2.8)), 0, 0])
 
     #
     # The cuboid defining the outermost boundary of the Vault door in Room III
@@ -85,12 +80,10 @@ def build_vault_model(
 
     # The plane used to create the 30 degree north-most cut on the Vault door.
     # The positive vector points towards the lower-left
-    # Surface_14 = openmc.Plane(a=0.5, b=0.86603, c=0.0, d=1084.9)
     Surface_14 = openmc.Plane(a=0.5, b=0.86603, c=0.0, d=446.3839386000001)
 
     # The plane used to create the 30 degree south-most cut on the Vault door
     # the positive vector points towards the upper-left
-    # Surface_15 = openmc.Plane(a=0.5, b=-0.86603, c=0.0, d=238.93)
     Surface_15 = openmc.Plane(a=0.5, b=-0.86603, c=0.0, d=-227.45393860000007)
 
     # The main Vault shield door in Room III
@@ -146,7 +139,6 @@ def build_vault_model(
 
     # with an angle of 2.8 degrees. The positive vector points towards the
     # lower-right (Southeast) corner of the geometry
-    # Surface_48 = openmc.Plane(a=0.99881, b=-0.04885, c=0.0, d=2063.64)
     Surface_48 = openmc.Plane(a=0.99881, b=-0.04885, c=0.0, d=964.9095439999999)
 
     # The CMU wall partially covering the north shield wall in Room III
@@ -332,11 +324,6 @@ def build_vault_model(
     )
     if overall_exclusion_region:
         Region_28 = Region_28 & ~overall_exclusion_region
-
-    translation_vector = [-1104.9, -99.38, 0.0]
-
-    # for surface in [Surface_49, East_outer_plane, Surface_14, Surface_15, Surface_48]:
-    #     translate_surface(surface, *translation_vector)
 
     Vault_air_cell = openmc.Cell(fill=Air, region=Region_28)
     DANTE_vault_mag_stand_cell = openmc.Cell(
