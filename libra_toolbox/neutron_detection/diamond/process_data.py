@@ -113,10 +113,10 @@ class DataProcessor:
             time_values = time_values[peak_mask]
 
         # Create mask to only count pulses of any energy in section time window
-        idx = np.logical_and(self.time_values > t_min, self.time_values < t_max)
+        idx = np.logical_and(time_values > t_min, time_values < t_max)
 
-        counts = len(self.time_values[idx])
-        error = np.sqrt(len(self.time_values[idx]))
+        counts = len(time_values[idx])
+        error = np.sqrt(len(time_values[idx]))
         delta_t = t_max - t_min
         count_rate = counts / delta_t
         count_rate_err = error / delta_t
