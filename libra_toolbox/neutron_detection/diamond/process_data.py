@@ -74,7 +74,7 @@ class DataProcessor:
         time_values = self.time_values.copy()
         energy_values = self.energy_values.copy()
 
-        time_bins = np.arange(0, time_values[-2], bin_time)
+        time_bins = np.arange(time_values.min(), time_values[-2], bin_time)
 
         if energy_window is not None:
             peak_mask = (energy_values > energy_window[0]) & (
