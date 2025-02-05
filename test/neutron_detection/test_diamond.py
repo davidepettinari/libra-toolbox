@@ -147,10 +147,14 @@ def test_get_count_rate(tmpdir):
 
 def test_count_rate_doesnt_ignore_data():
     """Test to catch the bug in #48"""
+
+    # create a processor with time from -100 to 100 and energy values from -100 to 100
     processor = DataProcessor()
     processor.time_values = np.linspace(-100, 100, 1000)
     processor.energy_values = np.linspace(-100, 100, 1000)
 
-    count_rates, count_rate_bins = processor.get_count_rate(bin_time=1)
+    # calculate the count rates
+    count_rates, time_bins = processor.get_count_rate(bin_time=1)
 
-    assert count_rate_bins[0] != 0.0
+    # the first time bin should be -100
+    assert np.isclose(time_bins[0], -100)
